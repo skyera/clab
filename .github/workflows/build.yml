@@ -1,0 +1,27 @@
+name: Build
+
+on: [push, pull_request, workflow_dispatch]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Build and run on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./build.ps1 -Run
+      - name: Build and run on Linux
+        if: runner.os == 'Linux'
+        shell: bash
+        run: bash build.sh --run
