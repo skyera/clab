@@ -2,7 +2,8 @@
 
 A C99 contact-directory example using
 [uthash](https://github.com/troydhanson/uthash) as a Git submodule in
-`third_party/uthash`.
+`third_party/uthash`. Unit tests use [Unity](https://github.com/ThrowTheSwitch/Unity)
+from the `third_party/Unity` submodule.
 
 The program demonstrates insertion, updating an existing integer key, iteration,
 lookup, deletion, and freeing every entry. Names are limited to 63 bytes; longer
@@ -53,9 +54,9 @@ bash build.sh
 
 Use `bash build.sh --run` to also run the demo.
 
-The build scripts require CMake on `PATH`, initialize the submodule if missing,
-build in Release mode, and run the smoke test. They work from any working
-directory and stop if a step fails. The commands below show the manual steps.
+The build scripts require CMake on `PATH`, initialize missing submodules,
+build in Release mode, and run the unit tests and demo smoke test. They work
+from any working directory and stop if a step fails. The commands below show the manual steps.
 
 ### Windows (Visual Studio)
 
@@ -107,20 +108,41 @@ mixing CMake caches or compiled files.
 Linux:
 
 ```sh
-gcc -std=c99 -Wall -Wextra -Wpedantic -Ithird_party/uthash/src src/main.c -o uthash_demo
+gcc -std=c99 -Wall -Wextra -Wpedantic -Ithird_party/uthash/src src/main.c src/contacts.c -o uthash_demo
 ./uthash_demo
 ```
 
 Windows (MinGW, PowerShell):
 
 ```powershell
-gcc -std=c99 -Wall -Wextra -Wpedantic -Ithird_party/uthash/src src/main.c -o uthash_demo.exe
+gcc -std=c99 -Wall -Wextra -Wpedantic -Ithird_party/uthash/src src/main.c src/contacts.c -o uthash_demo.exe
 .\uthash_demo.exe
 ```
 
-GitHub Actions builds and runs the CTest smoke test on Windows (MSVC) and Linux
-(GCC) on every push and pull request. The test checks that the demo exits
-successfully and reaches cleanup with an empty table.
+## Tests
+
+`src/contacts.c` and `src/contacts.h` contain the reusable contact operations.
+`tests/test_contacts.c` contains ten Unity tests covering insertion, lookup,
+updates without duplicates, deletion, missing IDs, repeated cleanup and reuse,
+copied names, empty names, the 63-byte name boundary, rejection without mutation,
+and zero/negative IDs. Each test starts with an empty table and frees its entries.
+Allocation-failure injection is not covered.
+
+The normal build scripts run both `contacts_unit_tests` and `uthash_demo_runs`
+through CTest. To see individual Unity results after building:
+
+```powershell
+ctest --test-dir build-windows -C Release -R contacts_unit_tests --verbose
+```
+
+On Linux, use `ctest --test-dir build-linux -R contacts_unit_tests --verbose`;
+for MinGW, use `build-mingw` instead. The demo smoke test checks successful exit
+and cleanup with an empty table. GitHub Actions runs both test executables on
+Windows (MSVC) and Linux (GCC) on every push and pull request.
+
+Unity is linked only into the test executable. To build only the application
+manually, configure CMake with `-DBUILD_TESTING=OFF`. The build scripts explicitly
+enable testing on every invocation.
 
 ## Output
 

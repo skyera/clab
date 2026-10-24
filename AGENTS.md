@@ -60,12 +60,14 @@ restarting the review process. Never infer approval from silence or elapsed time
 
 ## Layout
 
-- `src/main.c`: contact hash-table operations and the demo entry point.
+- `src/main.c`: demo entry point.
+- `src/contacts.c` and `src/contacts.h`: reusable contact hash-table operations.
+- `tests/test_contacts.c`: Unity unit tests for the contact operations.
 - `CMakeLists.txt`: executable target, compiler options, and CTest registration.
-- `build.ps1`: Windows Release build and smoke test; defaults to Visual Studio
+- `build.ps1`: Windows Release build and tests; defaults to Visual Studio
   2022 x64, with `-MinGW` selecting MinGW Makefiles.
 - `build.cmd`: Command Prompt wrapper for `build.ps1`; forwards options and exit codes.
-- `build.sh`: Linux Release build and smoke test using Unix Makefiles.
+- `build.sh`: Linux Release build and tests using Unix Makefiles.
 - `.github/workflows/build.yml`: Windows and Linux builds using these scripts.
 - `third_party/uthash`: pinned upstream Git submodule for hash-table macros.
 - `third_party/Unity`: pinned upstream Git submodule for C unit testing.
@@ -81,13 +83,13 @@ git submodule update --init --recursive
 Preserve submodules as Git links. Do not copy their sources into application
 directories or edit upstream code for ordinary application changes. Update a
 submodule revision only when needed for the requested work, and explain the
-reason. Unity is present but is not yet connected to CMake or application tests.
+reason. Unity is linked into `test_contacts` when `BUILD_TESTING` is enabled.
 
 ## Build and validation
 
 Run the relevant command from the repository root:
 
-| Environment | Build and smoke test | Also run the demo |
+| Environment | Build and tests | Also run the demo |
 | --- | --- | --- |
 | Windows CMD, MSVC | `build.cmd` | `build.cmd -Run` |
 | Windows CMD, MinGW | `build.cmd -MinGW` | `build.cmd -MinGW -Run` |
@@ -99,9 +101,10 @@ The scripts require CMake, CTest, and the selected compiler/build tools. Keep
 the separate `build-windows`, `build-mingw`, and `build-linux` directories;
 never share a CMake cache across platforms or generators.
 
-The current CTest smoke test checks successful exit and `After cleanup: 0` in
-the output. For changes to contact behavior, add meaningful unit tests using
-Unity and register them with CTest. Test through the existing build scripts.
+CTest runs the Unity contact tests and a demo smoke test. The smoke test
+checks successful exit and `After cleanup: 0` in the output. For changes to
+contact behavior, add meaningful unit tests using Unity and register them with
+CTest. Test through the existing build scripts.
 Report which platforms were actually checked and any unavailable tooling.
 Documentation-only changes do not require rebuilding.
 

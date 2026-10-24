@@ -21,7 +21,8 @@ try {
         }
     }
 
-    if (-not (Test-Path -LiteralPath "$PSScriptRoot/third_party/uthash/src/uthash.h")) {
+    if (-not (Test-Path -LiteralPath "$PSScriptRoot/third_party/uthash/src/uthash.h") -or
+        -not (Test-Path -LiteralPath "$PSScriptRoot/third_party/Unity/src/unity.c")) {
         Invoke-Checked git @('-C', $PSScriptRoot, 'submodule', 'update', '--init', '--recursive')
     }
 
@@ -35,7 +36,7 @@ try {
         $executable = Join-Path $buildDir 'Release/uthash_demo.exe'
     }
 
-    Invoke-Checked cmake (@('-S', $PSScriptRoot, '-B', $buildDir) + $generatorArgs)
+    Invoke-Checked cmake (@('-S', $PSScriptRoot, '-B', $buildDir, '-DBUILD_TESTING=ON') + $generatorArgs)
     Invoke-Checked cmake @('--build', $buildDir, '--config', 'Release')
     Invoke-Checked ctest @('--test-dir', $buildDir, '-C', 'Release', '--output-on-failure')
     Write-Host "Built: $executable"

@@ -23,11 +23,11 @@ for tool in cmake ctest; do
     fi
 done
 
-if [[ ! -f "$root/third_party/uthash/src/uthash.h" ]]; then
+if [[ ! -f "$root/third_party/uthash/src/uthash.h" || ! -f "$root/third_party/Unity/src/unity.c" ]]; then
     git -C "$root" submodule update --init --recursive
 fi
 
-cmake -S "$root" -B "$build_dir" -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+cmake -S "$root" -B "$build_dir" -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
 cmake --build "$build_dir"
 ctest --test-dir "$build_dir" --output-on-failure
 echo "Built: $build_dir/uthash_demo"
