@@ -19,8 +19,8 @@ jobs:
           submodules: recursive
       - name: Build and run on Windows
         if: runner.os == 'Windows'
-        shell: pwsh
-        run: ./build.ps1 -Run
+        shell: cmd
+        run: build.cmd -Run
       - name: Build and run on Linux
         if: runner.os == 'Linux'
         shell: bash

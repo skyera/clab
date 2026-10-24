@@ -26,6 +26,16 @@ platforms. Only the uthash header is needed; there is no library to link.
 
 ### Quick build scripts
 
+Windows Command Prompt (Visual Studio 2022 C build tools):
+
+```cmd
+build.cmd
+```
+
+Use `build.cmd -Run` to also run the demo, or `build.cmd -MinGW -Run` for
+MinGW GCC. The CMD wrapper uses the PowerShell build script and forwards its
+options and exit code.
+
 Windows (PowerShell, Visual Studio 2022 C build tools):
 
 ```powershell
@@ -43,7 +53,7 @@ bash build.sh
 
 Use `bash build.sh --run` to also run the demo.
 
-Both scripts require CMake on `PATH`, initialize the submodule if missing,
+The build scripts require CMake on `PATH`, initialize the submodule if missing,
 build in Release mode, and run the smoke test. They work from any working
 directory and stop if a step fails. The commands below show the manual steps.
 
